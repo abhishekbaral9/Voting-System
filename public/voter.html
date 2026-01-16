@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Portal - Nepal Voting System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: #dc143c;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .candidate-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .candidate-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .candidate-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .candidate-card.selected {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .candidate-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .candidate-card p {
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .symbol {
+            font-size: 2em;
+            margin: 15px 0;
+        }
+
+        .voter-info {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .voter-info h3 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+
+        .voter-info p {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+
+        .warning strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .candidate-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✓ Voter Portal</h1>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </div>
+
+        <!-- Voter Registration Section -->
+        <div id="registrationSection" class="section">
+            <h2>Voter Registration</h2>
+            <div id="regMessage" class="message"></div>
+            <form id="voterRegForm">
+                <div class="form-group">
+                    <label for="voterId">Voter ID *</label>
+                    <input type="text" id="voterId" required placeholder="e.g., V12345">
+                </div>
+                <div class="form-group">
+                    <label for="voterName">Full Name *</label>
+                    <input type="text" id="voterName" required placeholder="e.g., Sita Devi">
+                </div>
+                <div class="form-group">
+                    <label for="citizenshipNumber">Citizenship Number *</label>
+                    <input type="text" id="citizenshipNumber" required placeholder="e.g., 123-456-789">
+                </div>
+                <button type="submit" class="btn">Register as Voter</button>
+            </form>
+        </div>
+
+        <!-- Voter Login Section -->
+        <div id="loginSection" class="section">
+            <h2>Voter Login</h2>
+            <div id="loginMessage" class="message"></div>
+            <div class="warning">
+                <strong>⚠️ Important:</strong>
+                According to Nepal's voting system, each voter can vote only once. Please use your registered Voter ID to proceed.
+            </div>
+            <form id="voterLoginForm">
+                <div class="form-group">
+                    <label for="loginVoterId">Enter Your Voter ID</label>
+                    <input type="text" id="loginVoterId" required placeholder="e.g., V12345">
+                </div>
+                <button type="submit" class="btn">Check Status & Vote</button>
+            </form>
+        </div>
+
+        <!-- Voting Section -->
+        <div id="votingSection" class="section hidden">
+            <h2>Cast Your Vote</h2>
+            <div id="voteMessage" class="message"></div>
+            
+            <div id="voterInfoDiv" class="voter-info"></div>
+
+            <div class="warning">
+                <strong>⚠️ Remember:</strong>
+                Once you cast your vote, you cannot change it. Please choose carefully!
+            </div>
+
+            <h3 style="margin-bottom: 15px;">Select a Candidate:</h3>
+            <div id="candidatesList" class="candidate-grid"></div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button id="confirmVoteBtn" class="btn" disabled>Confirm Vote</button>
+                <button id="cancelVoteBtn" class="btn" style="background: #6c757d; margin-left: 10px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let selectedCandidate = null;
+        let currentVoter = null;
+
+        // Voter Registration
+        document.getElementById('voterRegForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const voterData = {
+                voterId: document.getElementById('voterId').value,
+                voterName: document.getElementById('voterName').value,
+                citizenshipNumber: document.getElementById('citizenshipNumber').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/voters/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(voterData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('regMessage', data.message, 'success');
+                    document.getElementById('voterRegForm').reset();
+                } else {
+                    showMessage('regMessage', data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('regMessage', 'Error: ' + error.message, 'error');
+            }
+        });
+
+        // Voter Login
+        document.getElementById('voterLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const voterId = document.getElementById('loginVoterId').value;
+
+            try {
+                const response = await fetch(`${API_URL}/voters/check/${voterId}`);
+                const voter = await response.json();
+
+                if (response.ok) {
+                    currentVoter = voter;
+
+                    if (voter.hasVoted) {
+                        showMessage('loginMessage', 
+                            `You have already voted for ${voter.votedFor.partyName} on ${new Date(voter.votedAt).toLocaleString()}. You cannot vote again.`, 
+                            'error');
+                    } else {
+                        showMessage('loginMessage', 'Login successful! Loading candidates...', 'success');
+                        setTimeout(() => {
+                            showVotingSection();
+                        }, 1000);
+                    }
+                } else {
+                    showMessage('loginMessage', voter.error, 'error');
+                }
+            } catch (error) {
+                showMessage('loginMessage', 'Error: ' + error.message, 'error');
+            }
+        });
+
+        // Show voting section
+        async function showVotingSection() {
+            document.getElementById('registrationSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('votingSection').classList.remove('hidden');
+
+            // Display voter info
+            document.getElementById('voterInfoDiv').innerHTML = `
+                <h3>Voter Information</h3>
+                <p><strong>Name:</strong> ${currentVoter.voterName}</p>
+                <p><strong>Voter ID:</strong> ${currentVoter.voterId}</p>
+                <p><strong>Status:</strong> <span style="color: #28a745;">Eligible to Vote</span></p>
+            `;
+
+            // Load candidates
+            await loadCandidates();
+        }
+
+        // Load candidates
+        async function loadCandidates() {
+            try {
+                const response = await fetch(`${API_URL}/participants`);
+                const candidates = await response.json();
+
+                const candidatesList = document.getElementById('candidatesList');
+
+                if (candidates.length === 0) {
+                    candidatesList.innerHTML = '<p style="text-align: center; color: #999;">No candidates available yet.</p>';
+                    return;
+                }
+
+                candidatesList.innerHTML = candidates.map(c => `
+                    <div class="candidate-card" onclick="selectCandidate('${c._id}', this)">
+                        <div class="symbol">${c.partySymbol || '🏛️'}</div>
+                        <h3>${c.partyName}</h3>
+                        <p><strong>${c.participantName}</strong></p>
+                        ${c.description ? `<p style="font-size: 0.9em; margin-top: 10px;">${c.description}</p>` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading candidates:', error);
+            }
+        }
+
+        // Select candidate
+        function selectCandidate(candidateId, element) {
+            // Remove previous selection
+            document.querySelectorAll('.candidate-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selection
+            element.classList.add('selected');
+            selectedCandidate = candidateId;
+            document.getElementById('confirmVoteBtn').disabled = false;
+        }
+
+        // Confirm vote
+        document.getElementById('confirmVoteBtn').addEventListener('click', async () => {
+            if (!selectedCandidate) {
+                showMessage('voteMessage', 'Please select a candidate first!', 'error');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to cast your vote? This action cannot be undone!')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/vote`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        voterId: currentVoter.voterId,
+                        participantId: selectedCandidate
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('voteMessage', '✓ Your vote has been cast successfully! Thank you for participating in the democratic process.', 'success');
+                    document.getElementById('candidatesList').innerHTML = '';
+                    document.getElementById('confirmVoteBtn').disabled = true;
+                    
+                    setTimeout(() => {
+                        window.location.href = '/live-results';
+                    }, 3000);
+                } else {
+                    showMessage('voteMessage', data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('voteMessage', 'Error: ' + error.message, 'error');
+            }
+        });
+
+        // Cancel voting
+        document.getElementById('cancelVoteBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to cancel? You will be logged out.')) {
+                location.reload();
+            }
+        });
+
+        // Show message
+        function showMessage(elementId, message, type) {
+            const messageDiv = document.getElementById(elementId);
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

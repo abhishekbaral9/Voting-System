@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONLINE VOTING NEPAL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: darkblue;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗳️ ONLINE VOTING NEPAL</h1>
+            <p>Democratic, Transparent, Secure</p>
+        </div>
+
+        <div class="content">
+            <div class="card-grid">
+                <div class="card" onclick="window.location.href='/participant'">
+                    <div class="card-icon">👥</div>
+                    <h3>Participant Portal</h3>
+                    <p>Register as a candidate, manage your party information, and participate in the election</p>
+                    <a href="/participant" class="btn">Enter Portal</a>
+                </div>
+
+                <div class="card" onclick="window.location.href='/voter'">
+                    <div class="card-icon">✓</div>
+                    <h3>Voter Portal</h3>
+                    <p>Register as a voter and cast your vote securely. Remember: One person, one vote!</p>
+                    <a href="/voter" class="btn">Enter Portal</a>
+                </div>
+
+                <div class="card" onclick="window.location.href='/live-results'">
+                    <div class="card-icon">📊</div>
+                    <h3>Live Results</h3>
+                    <p>View real-time voting results and statistics as votes are being counted</p>
+                    <a href="/live-results" class="btn">View Results</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Nepal Voting System | Secure & Transparent Elections</p>
+        </div>
+    </div>
+</body>
+</html>
