@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Results - Nepal Voting System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #dc143c;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .live-dot {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .results-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .results-section h2 {
+            color: #333;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .result-item {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 20px;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .result-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .rank {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            min-width: 50px;
+        }
+
+        .rank.first { color: #ffd700; }
+        .rank.second { color: #c0c0c0; }
+        .rank.third { color: #cd7f32; }
+
+        .candidate-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.3em;
+        }
+
+        .candidate-info p {
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .vote-info {
+            text-align: right;
+        }
+
+        .vote-count {
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 5px;
+        }
+
+        .vote-percentage {
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+
+        .refresh-notice {
+            background: #d1ecf1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #0c5460;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .result-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .vote-info {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Live Voting Results</h1>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    <span>LIVE</span>
+                </div>
+                <a href="/" class="back-btn">← Home</a>
+            </div>
+        </div>
+
+        <div class="refresh-notice">
+            🔄 Results update automatically in real-time when votes are cast
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Votes Cast</h3>
+                <div class="value" id="totalVotes">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Registered Voters</h3>
+                <div class="value" id="registeredVoters">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Voter Turnout</h3>
+                <div class="value" id="turnoutPercentage">0%</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Candidates</h3>
+                <div class="value" id="totalCandidates">0</div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h2>Candidate Results</h2>
+            <div id="resultsList"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        const socket = io('http://localhost:5000');
+
+        // Load initial results
+        loadResults();
+
+        // Listen for real-time updates
+        socket.on('voteUpdate', (data) => {
+            console.log('Real-time update received:', data);
+            updateResults(data.participants, data.totalVotes);
+        });
+
+        // Load results from API
+        async function loadResults() {
+            try {
+                const response = await fetch(`${API_URL}/results`);
+                const data = await response.json();
+
+                document.getElementById('totalVotes').textContent = data.totalVotes;
+                document.getElementById('registeredVoters').textContent = data.totalRegisteredVoters;
+                document.getElementById('turnoutPercentage').textContent = data.turnoutPercentage + '%';
+                document.getElementById('totalCandidates').textContent = data.participants.length;
+
+                updateResults(data.participants, data.totalVotes);
+            } catch (error) {
+                console.error('Error loading results:', error);
+                document.getElementById('resultsList').innerHTML = `
+                    <div class="no-results">
+                        <p>Error loading results. Please refresh the page.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Update results display
+        function updateResults(participants, totalVotes) {
+            const resultsList = document.getElementById('resultsList');
+
+            if (participants.length === 0) {
+                resultsList.innerHTML = `
+                    <div class="no-results">
+                        <p>No candidates registered yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Update stats
+            document.getElementById('totalVotes').textContent = totalVotes;
+            document.getElementById('totalCandidates').textContent = participants.length;
+
+            resultsList.innerHTML = participants.map((p, index) => {
+                const percentage = totalVotes > 0 ? ((p.voteCount / totalVotes) * 100).toFixed(2) : 0;
+                let rankClass = '';
+                let rankDisplay = `#${index + 1}`;
+
+                if (index === 0) {
+                    rankClass = 'first';
+                    rankDisplay = '🥇';
+                } else if (index === 1) {
+                    rankClass = 'second';
+                    rankDisplay = '🥈';
+                } else if (index === 2) {
+                    rankClass = 'third';
+                    rankDisplay = '🥉';
+                }
+
+                return `
+                    <div class="result-item">
+                        <div class="rank ${rankClass}">${rankDisplay}</div>
+                        <div class="candidate-info">
+                            <h3>${p.partyName}</h3>
+                            <p><strong>Candidate:</strong> ${p.participantName}</p>
+                            ${p.partySymbol ? `<p><strong>Symbol:</strong> ${p.partySymbol}</p>` : ''}
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${percentage}%">
+                                    ${percentage > 10 ? percentage + '%' : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="vote-info">
+                            <div class="vote-count">${p.voteCount}</div>
+                            <div class="vote-percentage">${percentage}%</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Handle connection status
+        socket.on('connect', () => {
+            console.log('Connected to live updates');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from live updates');
+        });
+    </script>
+</body>
+</html>
