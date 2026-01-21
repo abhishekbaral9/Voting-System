@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cast Your Vote - Nepal Local Election 2079</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 35px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            padding: 12px 25px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .instruction-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 5px solid #ff6b6b;
+        }
+
+        .instruction-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .instruction-box ul {
+            color: #856404;
+            margin-left: 20px;
+        }
+
+        .instruction-box li {
+            margin-bottom: 5px;
+        }
+
+        .ballot-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .ballot-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .ballot-title.proportional {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .ballot-title h2 {
+            font-size: 1.6em;
+            margin-bottom: 5px;
+        }
+
+        .ballot-title p {
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+
+        .candidates-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .candidate-option {
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .candidate-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateX(5px);
+        }
+
+        .candidate-option.selected {
+            border-color: #28a745;
+            background: #e8f5e9;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+        }
+
+        .radio-btn {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #ddd;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .candidate-option.selected .radio-btn {
+            border-color: #28a745;
+        }
+
+        .candidate-option.selected .radio-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            background: #28a745;
+            border-radius: 50%;
+        }
+
+        .candidate-info h3 {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 5px;
+        }
+
+        .candidate-info .nepali {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .candidate-info .party-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .position-badge {
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        .vote-summary {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .vote-summary h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .summary-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-item strong {
+            color: #667eea;
+        }
+
+        .submit-section {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .submit-btn {
+            padding: 18px 60px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(40, 167, 69, 0.5);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .no-candidates {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .candidate-option {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .position-badge {
+                justify-self: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗳️ Cast Your Vote - मतदान गर्नुहोस्</h1>
+            <a href="/voter" class="back-btn">← Back</a>
+        </div>
+
+        <div class="instruction-box">
+            <h3>📋 Voting Instructions / मतदान निर्देशन</h3>
+            <ul>
+                <li><strong>Direct Election:</strong> Select ONE candidate for EACH position (Mayor, Deputy Mayor, Ward Members)</li>
+                <li><strong>प्रत्यक्ष निर्वाचन:</strong> प्रत्येक पदको लागि एक उम्मेदवार छान्नुहोस्</li>
+                <li><strong>Proportional:</strong> Your vote automatically goes to the party you selected</li>
+                <li><strong>समानुपातिक:</strong> तपाईंले छाने गरेको पार्टीलाई स्वतः मत जान्छ</li>
+            </ul>
+        </div>
+
+        <!-- Direct Election Ballot -->
+        <div class="ballot-section" id="directBallot">
+            <div class="ballot-title">
+                <h2>प्रत्यक्ष निर्वाचन (Direct Election)</h2>
+                <p>Select one candidate for each position / प्रत्येक पदको लागि एक उम्मेदवार छान्नुहोस्</p>
+            </div>
+            <div class="candidates-list" id="directCandidates">
+                <div class="no-candidates">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Proportional Ballot -->
+        <div class="ballot-section" id="proportionalInfo">
+            <div class="ballot-title proportional">
+                <h2>समानुपातिक निर्वाचन (Proportional Representation)</h2>
+                <p>Your vote goes to this party / तपाईंको मत यो पार्टीलाई जान्छ</p>
+            </div>
+            <div style="padding: 20px; background: #e8f5e9; border-radius: 10px; text-align: center;">
+                <h3 style="color: #28a745; font-size: 1.8em;" id="selectedPartyName">Loading...</h3>
+                <p style="color: #666; margin-top: 10px;">All proportional seats will go to this party based on total votes</p>
+            </div>
+        </div>
+
+        <!-- Vote Summary -->
+        <div class="vote-summary">
+            <h3>📊 Your Vote Summary / तपाईंको मत सारांश</h3>
+            <div id="voteSummary"></div>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-section">
+            <div id="voteMessage" class="message"></div>
+            <p style="color: #666; margin-bottom: 20px; font-size: 1.1em;">
+                Review your selections above and confirm your vote
+            </p>
+            <button class="submit-btn" id="submitBtn" onclick="submitVote()">
+                ✅ Confirm and Submit Vote
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        const params = new URLSearchParams(window.location.search);
+        const partyId = params.get('partyId');
+        const voterId = params.get('voterId');
+
+        if (!partyId || !voterId) {
+            alert('Invalid access. Redirecting...');
+            window.location.href = '/voter';
+        }
+
+        let currentParty = null;
+        let directMembers = [];
+        let selectedCandidates = {};
+
+        async function loadBallot() {
+            try {
+                // Load party
+                const partyRes = await fetch(`${API_URL}/participants/${partyId}`);
+                if (partyRes.ok) {
+                    currentParty = await partyRes.json();
+                    document.getElementById('selectedPartyName').textContent = 
+                        currentParty.partyName + (currentParty.partyNameNepali ? ` / ${currentParty.partyNameNepali}` : '');
+                }
+
+                // Load direct candidates
+                const membersRes = await fetch(`${API_URL}/party-members/${partyId}`);
+                const allMembers = await membersRes.json();
+
+                directMembers = allMembers.filter(m => m.type === 'direct');
+                displayDirectCandidates();
+                updateSummary();
+
+            } catch (error) {
+                console.error('Error loading ballot:', error);
+                alert('Error loading ballot. Please try again.');
+            }
+        }
+
+        function displayDirectCandidates() {
+            const container = document.getElementById('directCandidates');
+            
+            if (directMembers.length === 0) {
+                container.innerHTML = '<div class="no-candidates">No direct candidates available</div>';
+                return;
+            }
+
+            // Group by position
+            const byPosition = {};
+            directMembers.forEach(member => {
+                if (!byPosition[member.position]) {
+                    byPosition[member.position] = [];
+                }
+                byPosition[member.position].push(member);
+            });
+
+            let html = '';
+            for (const [position, candidates] of Object.entries(byPosition)) {
+                html += `
+                    <div style="margin-top: 30px;">
+                        <h3 style="color: #667eea; margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                            ${position}${candidates[0].positionNepali ? ` / ${candidates[0].positionNepali}` : ''}
+                            ${candidates[0].wardNumber ? ` - Ward ${candidates[0].wardNumber}` : ''}
+                        </h3>
+                `;
+                
+                candidates.forEach(member => {
+                    const isSelected = selectedCandidates[position] === member._id;
+                    html += `
+                        <div class="candidate-option ${isSelected ? 'selected' : ''}" 
+                             onclick="selectCandidate('${position}', '${member._id}')">
+                            <div class="radio-btn"></div>
+                            <div class="candidate-info">
+                                <h3>${member.memberName}</h3>
+                                ${member.memberNameNepali ? 
+                                    `<div class="nepali">${member.memberNameNepali}</div>` : ''
+                                }
+                                <span class="party-badge">${currentParty.partyName}</span>
+                            </div>
+                            <div class="position-badge">
+                                ${member.wardNumber ? `Ward ${member.wardNumber}` : 'Municipality'}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function selectCandidate(position, memberId) {
+            selectedCandidates[position] = memberId;
+            displayDirectCandidates();
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const summaryDiv = document.getElementById('voteSummary');
+            const selectedCount = Object.keys(selectedCandidates).length;
+            
+            let html = `
+                <div class="summary-item">
+                    <span>Party Vote (Proportional):</span>
+                    <strong>${currentParty ? currentParty.partyName : 'Loading...'}</strong>
+                </div>
+            `;
+
+            if (selectedCount > 0) {
+                for (const [position, memberId] of Object.entries(selectedCandidates)) {
+                    const member = directMembers.find(m => m._id === memberId);
+                    if (member) {
+                        html += `
+                            <div class="summary-item">
+                                <span>${position}:</span>
+                                <strong>${member.memberName}</strong>
+                            </div>
+                        `;
+                    }
+                }
+            } else {
+                html += '<div style="text-align: center; color: #999; padding: 20px;">No direct candidates selected yet</div>';
+            }
+
+            summaryDiv.innerHTML = html;
+        }
+
+        async function submitVote() {
+            const submitBtn = document.getElementById('submitBtn');
+            const voteMessage = document.getElementById('voteMessage');
+
+            const selectedCandidateIds = Object.values(selectedCandidates);
+            
+            if (selectedCandidateIds.length === 0) {
+                alert('Please select at least one candidate for direct election positions.');
+                return;
+            }
+
+            if (!confirm(`Confirm your vote?\n\nParty: ${currentParty.partyName}\nDirect votes: ${selectedCandidateIds.length} candidates\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            voteMessage.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_URL}/vote`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        voterId: voterId,
+                        partyId: partyId,
+                        selectedCandidates: selectedCandidateIds
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to cast vote');
+                }
+
+                voteMessage.textContent = `✅ ${data.message}! Voted for ${data.candidatesVoted} candidates and ${data.votedFor}`;
+                voteMessage.className = 'message success';
+                submitBtn.textContent = '✅ Vote Submitted Successfully';
+
+                setTimeout(() => {
+                    window.location.href = '/live-results';
+                }, 3000);
+
+            } catch (error) {
+                voteMessage.textContent = '❌ ' + error.message;
+                voteMessage.className = 'message error';
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Confirm and Submit Vote';
+            }
+        }
+
+        // Load ballot on page load
+        loadBallot();
+    </script>
+</body>
+</html>

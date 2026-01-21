@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Nepal Local Election 2082</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 1.5em;
+        }
+
+        .navbar button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>🗳️ Admin Dashboard</h1>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('parties')">Political Parties</button>
+            <button class="tab" onclick="showTab('members')">Party Members</button>
+            <button class="tab" onclick="showTab('voters')">Voters</button>
+            <button class="tab" onclick="showTab('results')">Results</button>
+        </div>
+
+        <div id="parties" class="tab-content active">
+            <div class="card">
+                <h2>Add New Political Party</h2>
+                <div id="partyMessage" class="message"></div>
+                <form id="partyForm">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Party Name (English) *</label>
+                            <input type="text" id="partyName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>पार्टी नाम (नेपाली)</label>
+                            <input type="text" id="partyNameNepali">
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Party Symbol</label>
+                            <input type="text" id="partySymbol" placeholder="e.g., Sun, Tree, Cow">
+                        </div>
+                        <div class="form-group">
+                            <label>Party Logo URL</label>
+                            <input type="url" id="partyLogo" placeholder="https://example.com/logo.png">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="description"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Add Party</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>All Political Parties</h2>
+                <table id="partiesTable">
+                    <thead>
+                        <tr>
+                            <th>Party Name</th>
+                            <th>Symbol</th>
+                            <th>Votes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="partiesTableBody">
+                        <tr>
+                            <td colspan="4">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="members" class="tab-content">
+            <div class="card">
+                <h2>Add Party Member</h2>
+                <div id="memberMessage" class="message"></div>
+                <form id="memberForm">
+                    <div class="form-group">
+                        <label>Select Party *</label>
+                        <select id="memberPartyId" required>
+                            <option value="">-- Select Party --</option>
+                        </select>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Member Name (English) *</label>
+                            <input type="text" id="memberName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>सदस्य नाम (नेपाली)</label>
+                            <input type="text" id="memberNameNepali">
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Position (English) *</label>
+                            <input type="text" id="position" required placeholder="e.g., Mayor, Deputy Mayor">
+                        </div>
+                        <div class="form-group">
+                            <label>पद (नेपाली)</label>
+                            <input type="text" id="positionNepali" placeholder="e.g., मेयर, उपमेयर">
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Type *</label>
+                            <select id="memberType" required>
+                                <option value="direct">Direct (प्रत्यक्ष)</option>
+                                <option value="proportional">Proportional (समानुपातिक)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ward Number (if applicable)</label>
+                            <input type="number" id="wardNumber" min="1">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Add Member</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>All Party Members</h2>
+                <div class="form-group">
+                    <label>Filter by Party</label>
+                    <select id="filterParty" onchange="loadMembers()">
+                        <option value="">-- All Parties --</option>
+                    </select>
+                </div>
+                <table id="membersTable">
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Position</th>
+                            <th>Type</th>
+                            <th>Ward</th>
+                            <th>Votes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody">
+                        <tr>
+                            <td colspan="6">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="voters" class="tab-content">
+            <div class="card">
+                <h2>Register Voter</h2>
+                <div id="voterMessage" class="message"></div>
+                <form id="voterForm">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Voter ID *</label>
+                            <input type="text" id="voterId" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Voter Name *</label>
+                            <input type="text" id="voterName" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Citizenship Number *</label>
+                        <input type="text" id="citizenshipNumber" required>
+                    </div>
+                    <button type="submit" class="btn">Register Voter</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>All Voters</h2>
+                <table id="votersTable">
+                    <thead>
+                        <tr>
+                            <th>Voter ID</th>
+                            <th>Name</th>
+                            <th>Citizenship</th>
+                            <th>Voted</th>
+                            <th>Voted For</th>
+                        </tr>
+                    </thead>
+                    <tbody id="votersTableBody">
+                        <tr>
+                            <td colspan="5">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="results" class="tab-content">
+            <div class="card">
+                <h2>Election Results</h2>
+                <div id="resultsContent">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let token = localStorage.getItem('adminToken');
+        if (!token) {
+            window.location.href = '/admin-login';
+        }
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+
+        let allParties = [];
+        let allMembers = [];
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'parties') loadParties();
+            if (tabName === 'members') loadMembers();
+            if (tabName === 'voters') loadVoters();
+            if (tabName === 'results') loadResults();
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = '/admin-login';
+        }
+
+        document.getElementById('partyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                partyName: document.getElementById('partyName').value,
+                partyNameNepali: document.getElementById('partyNameNepali').value,
+                partySymbol: document.getElementById('partySymbol').value,
+                partyLogo: document.getElementById('partyLogo').value,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/participants`, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                if (res.ok) {
+                    showMessage('partyMessage', result.message, 'success');
+                    document.getElementById('partyForm').reset();
+                    loadParties();
+                } else {
+                    showMessage('partyMessage', result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('partyMessage', error.message, 'error');
+            }
+        });
+
+        async function loadParties() {
+            try {
+                const res = await fetch(`${API_URL}/participants`);
+                allParties = await res.json();
+
+                const tbody = document.getElementById('partiesTableBody');
+                tbody.innerHTML = allParties.map(p => `
+                    <tr>
+                        <td><strong>${p.partyName}</strong><br>${p.partyNameNepali || ''}</td>
+                        <td>${p.partySymbol || '-'}</td>
+                        <td>${p.voteCount}</td>
+                        <td class="actions">
+                            <button class="btn-danger" onclick="deleteParty('${p._id}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                const selectHTML = `<option value="">-- Select Party --</option>` +
+                    allParties.map(p => `<option value="${p._id}">${p.partyName}</option>`).join('');
+                document.getElementById('memberPartyId').innerHTML = selectHTML;
+                document.getElementById('filterParty').innerHTML = `<option value="">-- All Parties --</option>` +
+                    allParties.map(p => `<option value="${p._id}">${p.partyName}</option>`).join('');
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function deleteParty(id) {
+            if (!confirm('Are you sure? This will delete all members of this party.')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/participants/${id}`, {
+                    method: 'DELETE',
+                    headers
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    loadParties();
+                    loadMembers();
+                } else {
+                    alert(result.error);
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        document.getElementById('memberForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                participantId: document.getElementById('memberPartyId').value,
+                memberName: document.getElementById('memberName').value,
+                memberNameNepali: document.getElementById('memberNameNepali').value,
+                position: document.getElementById('position').value,
+                positionNepali: document.getElementById('positionNepali').value,
+                type: document.getElementById('memberType').value,
+                wardNumber: document.getElementById('wardNumber').value || null
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/party-members`, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                if (res.ok) {
+                    showMessage('memberMessage', result.message, 'success');
+                    document.getElementById('memberForm').reset();
+                    loadMembers();
+                } else {
+                    showMessage('memberMessage', result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('memberMessage', error.message, 'error');
+            }
+        });
+
+        async function loadMembers() {
+            const filterPartyId = document.getElementById('filterParty')?.value;
+
+            try {
+                const promises = allParties.map(p =>
+                    fetch(`${API_URL}/party-members/${p._id}`).then(r => r.json())
+                );
+                const results = await Promise.all(promises);
+                allMembers = results.flat();
+
+                let filteredMembers = allMembers;
+                if (filterPartyId) {
+                    filteredMembers = allMembers.filter(m => m.participantId === filterPartyId);
+                }
+
+                const tbody = document.getElementById('membersTableBody');
+                if (filteredMembers.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6">No members found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = filteredMembers.map(m => {
+                    const party = allParties.find(p => p._id === m.participantId);
+                    return `
+                        <tr>
+                            <td>
+                                <strong>${m.memberName}</strong><br>
+                                ${m.memberNameNepali || ''}<br>
+                                <small style="color: #666;">${party?.partyName || ''}</small>
+                            </td>
+                            <td>${m.position}<br>${m.positionNepali || ''}</td>
+                            <td>${m.type === 'direct' ? 'प्रत्यक्ष' : 'समानुपातिक'}</td>
+                            <td>${m.wardNumber || '-'}</td>
+                            <td>${m.voteCount || 0}</td>
+                            <td class="actions">
+                                <button class="btn-danger" onclick="deleteMember('${m._id}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function deleteMember(id) {
+            if (!confirm('Are you sure?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/party-members/${id}`, {
+                    method: 'DELETE',
+                    headers
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    loadMembers();
+                } else {
+                    alert(result.error);
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // Voter Functions
+        document.getElementById('voterForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                voterId: document.getElementById('voterId').value,
+                voterName: document.getElementById('voterName').value,
+                citizenshipNumber: document.getElementById('citizenshipNumber').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/voters/register`, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                if (res.ok) {
+                    showMessage('voterMessage', result.message, 'success');
+                    document.getElementById('voterForm').reset();
+                    loadVoters();
+                } else {
+                    showMessage('voterMessage', result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('voterMessage', error.message, 'error');
+            }
+        });
+
+        async function loadVoters() {
+    try {
+        const res = await fetch(`${API_URL}/voters`, { headers });
+        const voters = await res.json();
+
+        const tbody = document.getElementById('votersTableBody');
+        tbody.innerHTML = voters.map(v => `
+            <tr>
+                <td>${v.voterId}</td>
+                <td>${v.voterName}</td>
+                <td>${v.citizenshipNumber}</td>
+                <td>${v.hasVoted ? '✅ Yes' : '❌ No'}</td>
+                <td>${v.votedForParty ? v.votedForParty.partyName : '-'}</td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error(error);
+        document.getElementById('votersTableBody').innerHTML = 
+            '<tr><td colspan="5">Error loading voters</td></tr>';
+    }
+}
+
+        async function loadResults() {
+            try {
+                const res = await fetch(`${API_URL}/results`);
+                const data = await res.json();
+
+                document.getElementById('resultsContent').innerHTML = `
+                    <h3>Statistics</h3>
+                    <p><strong>Total Votes:</strong> ${data.totalVotes}</p>
+                    <p><strong>Registered Voters:</strong> ${data.totalRegisteredVoters}</p>
+                    <p><strong>Turnout:</strong> ${data.turnoutPercentage}%</p>
+                    <h3 style="margin-top: 30px;">Party Results</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Party</th>
+                                <th>Votes</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.participants.map((p, i) => {
+                    const percentage = data.totalVotes > 0 ? ((p.voteCount / data.totalVotes) * 100).toFixed(2) : 0;
+                    return `
+                                    <tr>
+                                        <td>${i + 1}</td>
+                                        <td>${p.partyName}</td>
+                                        <td>${p.voteCount}</td>
+                                        <td>${percentage}%</td>
+                                    </tr>
+                                `;
+                }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function showMessage(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `message ${type}`;
+            setTimeout(() => {
+                el.className = 'message';
+            }, 5000);
+        }
+
+        // Load initial data
+        loadParties();
+    </script>
+</body>
+
+</html>

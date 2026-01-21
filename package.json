@@ -1,7 +1,7 @@
 {
   "name": "nepal-voting-system",
   "version": "1.0.0",
-  "description": "A complete voting system following Nepal's voting rules with real-time results",
+  "description": "Local Level Election of Nepal 2079 - Voting System",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -10,20 +10,20 @@
   "keywords": [
     "voting",
     "election",
-    "nepal",
-    "realtime",
-    "democracy"
+    "nepal"
   ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
     "express": "^4.18.2",
-    "mongoose": "^7.0.3",
-    "socket.io": "^4.6.1"
+    "mongoose": "^7.5.0",
+    "cors": "^2.8.5",
+    "socket.io": "^4.5.4",
+    "dotenv": "^16.3.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.0.1"
   }
 }

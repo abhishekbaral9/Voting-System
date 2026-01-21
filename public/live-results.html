@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Results - Nepal Voting System</title>
+    <title>Live Results - Nepal Local Election 2082</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
     <style>
         * {
@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #dbdbdb 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -26,17 +26,25 @@
 
         .header {
             background: white;
-            padding: 20px 30px;
+            padding: 25px 35px;
             border-radius: 15px;
             margin-bottom: 30px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .header h1 {
             color: #333;
+            font-size: 1.8em;
+        }
+
+        .header .nepali {
+            color: #666;
+            font-size: 1.2em;
         }
 
         .live-indicator {
@@ -44,27 +52,28 @@
             align-items: center;
             gap: 10px;
             background: #dc143c;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border-radius: 8px;
             color: white;
             font-weight: bold;
+            font-size: 1.1em;
         }
 
         .live-dot {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             background: white;
             border-radius: 50%;
             animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
         }
 
         .back-btn {
-            padding: 10px 20px;
+            padding: 12px 25px;
             background: #667eea;
             color: white;
             text-decoration: none;
@@ -81,7 +90,7 @@
 
         .stat-card {
             background: white;
-            padding: 25px;
+            padding: 30px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             text-align: center;
@@ -90,67 +99,110 @@
         .stat-card h3 {
             color: #666;
             font-size: 0.9em;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .stat-card .value {
-            font-size: 2.5em;
+            font-size: 3em;
             font-weight: bold;
-            color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .results-section {
             background: white;
-            padding: 30px;
+            padding: 35px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .results-section h2 {
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             padding-bottom: 15px;
             border-bottom: 3px solid #667eea;
+            font-size: 2em;
         }
 
         .result-item {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
             display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 20px;
+            grid-template-columns: auto auto 1fr auto;
+            gap: 25px;
             align-items: center;
             transition: all 0.3s;
+            border: 3px solid transparent;
         }
 
         .result-item:hover {
             transform: translateX(10px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: #667eea;
         }
 
         .rank {
-            font-size: 2em;
+            font-size: 2.5em;
             font-weight: bold;
             color: #667eea;
-            min-width: 50px;
+            min-width: 60px;
+            text-align: center;
         }
 
-        .rank.first { color: #ffd700; }
-        .rank.second { color: #c0c0c0; }
-        .rank.third { color: #cd7f32; }
+        .rank.first { 
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(255, 215, 0, 0.3);
+        }
+        .rank.second { 
+            color: #c0c0c0;
+            text-shadow: 2px 2px 4px rgba(192, 192, 192, 0.3);
+        }
+        .rank.third { 
+            color: #cd7f32;
+            text-shadow: 2px 2px 4px rgba(205, 127, 50, 0.3);
+        }
+
+        .party-logo-small {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .party-logo-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 10px;
+        }
 
         .candidate-info h3 {
             color: #333;
-            margin-bottom: 5px;
-            font-size: 1.3em;
+            margin-bottom: 8px;
+            font-size: 1.5em;
+        }
+
+        .candidate-info .nepali {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 8px;
         }
 
         .candidate-info p {
             color: #666;
-            margin-bottom: 3px;
+            margin-bottom: 5px;
+            font-size: 0.95em;
         }
 
         .vote-info {
@@ -158,57 +210,54 @@
         }
 
         .vote-count {
-            font-size: 2em;
+            font-size: 2.5em;
             font-weight: bold;
-            color: #28a745;
-            margin-bottom: 5px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
         }
 
         .vote-percentage {
-            font-size: 1.1em;
-            color: #666;
+            font-size: 1.3em;
+            color: #667eea;
+            font-weight: 600;
         }
 
         .progress-bar {
             width: 100%;
-            height: 30px;
+            height: 35px;
             background: #e0e0e0;
-            border-radius: 15px;
+            border-radius: 20px;
             overflow: hidden;
-            margin-top: 10px;
+            margin-top: 12px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .progress-fill {
             height: 100%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.5s ease;
+            transition: width 0.8s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 0.9em;
+            font-size: 1em;
         }
 
         .no-results {
             text-align: center;
-            padding: 50px;
+            padding: 60px;
             color: #999;
-        }
-
-        .refresh-notice {
-            background: #d1ecf1;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: #0c5460;
-            text-align: center;
+            font-size: 1.2em;
         }
 
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
-                gap: 15px;
+                text-align: center;
             }
 
             .result-item {
@@ -219,24 +268,31 @@
             .vote-info {
                 text-align: center;
             }
+
+            .rank {
+                margin: 0 auto;
+            }
+
+            .party-logo-small {
+                margin: 0 auto;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Live Voting Results</h1>
-            <div style="display: flex; gap: 15px; align-items: center;">
+            <div>
+                <h1>📊 Live Voting Results</h1>
+                <div class="nepali">प्रत्यक्ष परिणाम - स्थानीय तह निर्वाचन २०८२</div>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
                 <div class="live-indicator">
                     <div class="live-dot"></div>
                     <span>LIVE</span>
                 </div>
                 <a href="/" class="back-btn">← Home</a>
             </div>
-        </div>
-
-        <div class="refresh-notice">
-            🔄 Results update automatically in real-time when votes are cast
         </div>
 
         <div class="stats-grid">
@@ -253,13 +309,13 @@
                 <div class="value" id="turnoutPercentage">0%</div>
             </div>
             <div class="stat-card">
-                <h3>Total Candidates</h3>
+                <h3>Total Parties</h3>
                 <div class="value" id="totalCandidates">0</div>
             </div>
         </div>
 
         <div class="results-section">
-            <h2>Candidate Results</h2>
+            <h2>🏆 Party Results - पार्टी परिणाम</h2>
             <div id="resultsList"></div>
         </div>
     </div>
@@ -293,7 +349,7 @@
                 console.error('Error loading results:', error);
                 document.getElementById('resultsList').innerHTML = `
                     <div class="no-results">
-                        <p>Error loading results. Please refresh the page.</p>
+                        <p>❌ Error loading results. Please refresh the page.</p>
                     </div>
                 `;
             }
@@ -306,7 +362,7 @@
             if (participants.length === 0) {
                 resultsList.innerHTML = `
                     <div class="no-results">
-                        <p>No candidates registered yet.</p>
+                        <p>📋 No parties registered yet.</p>
                     </div>
                 `;
                 return;
@@ -335,13 +391,25 @@
                 return `
                     <div class="result-item">
                         <div class="rank ${rankClass}">${rankDisplay}</div>
+                        <div class="party-logo-small">
+                            ${p.partyLogo ? 
+                                `<img src="${p.partyLogo}" alt="${p.partyName}">` : 
+                                '🏛️'
+                            }
+                        </div>
                         <div class="candidate-info">
                             <h3>${p.partyName}</h3>
-                            <p><strong>Candidate:</strong> ${p.participantName}</p>
-                            ${p.partySymbol ? `<p><strong>Symbol:</strong> ${p.partySymbol}</p>` : ''}
+                            ${p.partyNameNepali ? 
+                                `<div class="nepali">${p.partyNameNepali}</div>` : 
+                                ''
+                            }
+                            ${p.partySymbol ? 
+                                `<p><strong>Symbol / चिन्ह:</strong> ${p.partySymbol}</p>` : 
+                                ''
+                            }
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: ${percentage}%">
-                                    ${percentage > 10 ? percentage + '%' : ''}
+                                    ${percentage > 8 ? percentage + '%' : ''}
                                 </div>
                             </div>
                         </div>
@@ -356,11 +424,11 @@
 
         // Handle connection status
         socket.on('connect', () => {
-            console.log('Connected to live updates');
+            console.log('✅ Connected to live updates');
         });
 
         socket.on('disconnect', () => {
-            console.log('Disconnected from live updates');
+            console.log('⚠️ Disconnected from live updates');
         });
     </script>
 </body>
